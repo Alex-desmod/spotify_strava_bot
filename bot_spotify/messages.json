@@ -1,0 +1,16 @@
+[
+  {
+    "start": "Интересно? Сначала давай авторизуемся (для доступа из России потребуется VPN, но если ты до сих пор как-то пользуешься Spotify в России, то точно справишься) ⬇\uFE0F \nЭто безопасно. Я не узнаю твои явки/пароли и даже не расскажу никому о твоих guilty pleasures \uD83D\uDE09 \nТак как наше приложение пока работает в режиме разработки (в котором наверняка и останется), доступ к API Spotify разрешен только для добавленных пользователей. После авторизации пришли через команду обратной связи свое имя и e-mail.",
+    "top": "It's a long way to the top if you wanna rock'n'roll\n<i>AC/DC</i>",
+    "time": "Time, it needs time to win back your love again\n<i>Scorpions</i>",
+    "time2": "Find all you need in your mind if you take the time\n<i>Dream Theater</i>",
+    "hunter": "They call me the hunter, that's my name\n<i>Led Zeppelin</i>",
+    "what": "Does anybody know what we are looking for?\n<i>Queen</i>",
+    "smtn": "Everybody's looking for something\n<i>Eurythmics</i>",
+    "sorry": "Сорри, я тупой бот и не умею отвечать на сообщения. Пожалуйста, выбери что-нибудь из меню.",
+    "feedback": "Если хочешь что-то высказать разработчику/админу, пиши и я ему обязательно передам. Но сомневаюсь, что он отреагирует!\nЕсли не хочешь, нажми на кнопку Отмена ⬇\uFE0F",
+    "send": "Спасибо! Твое мнение очень важно для нас \uD83D\uDE09",
+    "canceled": "\uD83D\uDC4C Если что - пиши!"
+
+  }
+]
