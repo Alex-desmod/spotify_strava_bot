@@ -1,11 +1,10 @@
-import sys
 import os
 import httpx
 import logging
 
-from dotenv import  load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import select
 
 from web_server.config import SPOTIFY_TOKEN_URL, SPOTIFY_REDIRECT_URI, SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET
@@ -15,7 +14,11 @@ from bot_spotify.models import User as SpotifyUser
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 app = FastAPI()
-templates = Jinja2Templates(directory="templates")
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+
+app.mount("/static", StaticFiles(directory="web_server/static"), name="static")
 
 @app.get("/callback/spotify")
 async def callback_spotify(request: Request):
@@ -53,7 +56,7 @@ async def callback_spotify(request: Request):
                 session.add(SpotifyUser(tg_id=tg_id, access_token=access_token, refresh_token=refresh_token))
             await session.commit()
 
-        return templates.TemplateResponse("spotify_success.html", {"request": request})
+        return templates.TemplateResponse("callback_spotify.html", {"request": request})
     else:
         return {"error": "Failed to get access token"}
 
