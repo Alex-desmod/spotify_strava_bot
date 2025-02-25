@@ -1,5 +1,8 @@
+import sys
 import os
 import httpx
+import logging
+
 from dotenv import  load_dotenv
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
@@ -9,7 +12,8 @@ from web_server.config import SPOTIFY_TOKEN_URL, SPOTIFY_REDIRECT_URI, SPOTIFY_C
 from web_server.database import get_spotify_session
 from bot_spotify.models import User as SpotifyUser
 
-load_dotenv()
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 

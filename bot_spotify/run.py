@@ -1,6 +1,8 @@
 import asyncio
 import os
 import logging
+import sys
+
 import uvicorn
 
 from aiogram.client.default import DefaultBotProperties
@@ -8,9 +10,11 @@ from aiogram.enums import ParseMode
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 
-from handlers import router
-from models import async_db
-from web_server import app
+from bot_spotify.handlers import router
+from web_server.server import app
+from bot_spotify.database import init_db
+
+# sys.path.append(os.path.dirname(os.path.abspath(os.path.join(__file__, "..", ".."))))
 
 
 async def run_web_server():
@@ -27,7 +31,7 @@ async def main():
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
     dp.include_router(router)
-    await async_db()
+    await init_db()
     asyncio.create_task(run_web_server())
     await dp.start_polling(bot)
 

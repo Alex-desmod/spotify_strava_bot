@@ -7,15 +7,15 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-import keyboards as kb
-import db.requests as rq
+import bot_spotify.keyboards as kb
+import bot_spotify.crud as crud
 
 
 router = Router(name=__name__)
 
 logger = logging.getLogger(__name__)
 
-with open("messages.json", "r", encoding="utf-8") as file:
+with open("bot_spotify/messages.json", "r", encoding="utf-8") as file:
     messages = json.load(file)
 
 
@@ -26,8 +26,8 @@ class FeedbackState(StatesGroup):
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
-    await rq.set_user(message.from_user.id, message.from_user.first_name)
-    access_token = await rq.get_valid_access_token(message.from_user.id)
+    await crud.set_user(message.from_user.id, message.from_user.first_name)
+    access_token = await crud.get_valid_access_token(message.from_user.id)
     # logger.info(access_token)
     if not access_token:
         await message.answer(f'Привет, {message.from_user.first_name} 😊\n{messages[0]["start"]}',
@@ -63,7 +63,7 @@ async def charts(callback: CallbackQuery):
     await callback.answer()
     queries = callback.data.split(".")
     logger.info(callback.from_user.id)
-    data = await rq.get_charts(callback.from_user.id, queries[0], queries[1], queries[2])
+    data = await crud.get_charts(callback.from_user.id, queries[0], queries[1], queries[2])
 
     for item in data["items"]:
         pos = data["items"].index(item) + 1
@@ -98,7 +98,7 @@ async def ask_feedback(message: Message, state: FSMContext):
 
 @router.message(FeedbackState.waiting_for_feedback, F.text != "❌ Отмена")
 async def forward_feedback(message: Message, bot: Bot, state: FSMContext):
-    admins = await rq.get_admins()
+    admins = await crud.get_admins()
 
     for admin in admins:
         logger.info(admin.tg_id)

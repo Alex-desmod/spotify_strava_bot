@@ -3,7 +3,8 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardBut
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from enum import Enum
 
-import endpoints
+from bot_spotify.config import get_auth_link
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class Limit(Enum):
 
 
 async def authorize(tg_id):
-    auth_link = endpoints.get_auth_link(tg_id)
+    auth_link = get_auth_link(tg_id)
     kb = InlineKeyboardBuilder()
     kb.add(InlineKeyboardButton(text="🔗 Авторизоваться в Spotify", url=auth_link))
     return kb.as_markup()

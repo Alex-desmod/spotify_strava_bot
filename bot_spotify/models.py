@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy import Integer, BigInteger, String, Boolean, ForeignKey, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncAttrs
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -21,7 +21,3 @@ class User(Base):
     access_token: Mapped[str] = mapped_column(String(), nullable=True)
     refresh_token: Mapped[str] = mapped_column(String(), nullable=True)
 
-
-async def async_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
