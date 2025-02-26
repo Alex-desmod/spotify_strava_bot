@@ -18,6 +18,8 @@ class User(Base):
     tg_id = mapped_column(BigInteger, index=True, unique=True)
     name: Mapped[str] = mapped_column(String(25))
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    athlete_id: Mapped[int] = mapped_column(Integer, nullable=True)
     access_token: Mapped[str] = mapped_column(String(), nullable=True)
     refresh_token: Mapped[str] = mapped_column(String(), nullable=True)
+    expires_at: Mapped[int] = mapped_column(Integer, nullable=True)
 
