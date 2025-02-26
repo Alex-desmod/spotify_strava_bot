@@ -63,7 +63,7 @@ async def get_valid_access_token(tg_id) -> str|None:
             return user.access_token  # The token is valid
 
         elif response.status_code == 401:
-            return await refresh_access_token(tg_id)  # The token is outdated and be refreshed
+            return await refresh_access_token(tg_id)  # The token is outdated and must be refreshed
 
         return None  # Error
 

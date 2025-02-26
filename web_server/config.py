@@ -9,4 +9,5 @@ SPOTIFY_CLIENT_SECRET = os.getenv("SPOTIFY_CLIENT_SECRET")
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_REDIRECT_URI = "http://127.0.0.1:8000/callback/spotify"
 
+STRAVA_TOKEN_URL = "https://www.strava.com/oauth/token"
 STRAVA_REDIRECT_URI = "http://127.0.0.1:8000/callback/strava"
