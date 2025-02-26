@@ -77,7 +77,7 @@ async def charts(callback: CallbackQuery):
             track = item["name"]
             await callback.message.answer(f"{pos:<4} <b>{artist}</b> - <b>{track}</b>\n")
 
-    await callback.message.answer("Еще...",
+    await callback.message.answer(messages[0]["notes"],
                                   reply_markup=await kb.start())
 
 

@@ -8,9 +8,9 @@ from aiogram.enums import ParseMode
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 
-from bot_spotify.handlers import router
+from bot_strava.handlers import router
 from web_server.server import app
-from bot_spotify.database import init_db
+from bot_strava.database import init_db
 
 # sys.path.append(os.path.dirname(os.path.abspath(os.path.join(__file__, "..", ".."))))
 
