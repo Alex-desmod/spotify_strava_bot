@@ -33,5 +33,39 @@ async def cmd_start(message: Message):
         await message.answer(f'Привет, {message.from_user.first_name} 😊\n{messages[0]["start"]}',
                          reply_markup=await kb.authorize(message.from_user.id))
     else:
-        await message.answer(messages[0]["top"],
+        await message.answer(messages[0]["main"],
                              reply_markup=await kb.start())
+
+
+@router.message(Command("feedback"))
+async def ask_feedback(message: Message, state: FSMContext):
+    await message.answer(messages[0]["feedback"],
+                         reply_markup=kb.cancel_kb
+                         )
+    await state.set_state(FeedbackState.waiting_for_feedback)
+
+
+@router.message(FeedbackState.waiting_for_feedback, F.text != "❌ Отмена")
+async def forward_feedback(message: Message, bot: Bot, state: FSMContext):
+    admins = await crud.get_admins()
+
+    for admin in admins:
+        logger.info(admin.tg_id)
+        await bot.send_message(
+            admin.tg_id,
+            f"📩 Новое сообщение от @{message.from_user.username or message.from_user.id}:\n\n{message.text}"
+        )
+    await message.answer(messages[0]["send"], reply_markup=ReplyKeyboardRemove())
+    await state.clear()
+
+
+@router.message(FeedbackState.waiting_for_feedback, F.text == "❌ Отмена")
+async def cancel_feedback(message: Message, state: FSMContext):
+    await message.answer(messages[0]["canceled"], reply_markup=ReplyKeyboardRemove())
+    await state.clear()
+
+
+@router.message()
+async def catch_all_messages(message: Message):
+    await message.answer(messages[0]["sorry"],
+                         reply_markup=await kb.start())

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorization passed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background: url("{{ url_for('static', path='images/spotify_background.jpg') }}") no-repeat bottom center fixed;
+            background-size: 60% auto;
+            background-color: #1e1e1e;
+            color: white;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Done!</h1>
+        <p>Now come back to the Telegram and keep on rocking </p>
+    </div>
+</body>
+</html>
