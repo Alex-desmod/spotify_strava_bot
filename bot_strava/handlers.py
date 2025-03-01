@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import datetime, date, timedelta, time
 
 from aiogram import Router, F, Bot
 from aiogram.filters import CommandStart, Command
@@ -40,6 +41,18 @@ async def cmd_start(message: Message):
 @router.callback_query(F.data == "week")
 async def week(callback: CallbackQuery):
     await callback.answer()
+    current_epoch = int(datetime.now().timestamp())
+    start_of_week = date.today() - timedelta(days=date.today().weekday())
+    start_of_week_datetime = datetime.combine(start_of_week, time.min)
+    start_of_week_epoch = int(start_of_week_datetime.timestamp())
+    start_of_last_week = start_of_week - timedelta(days=7)
+    start_of_last_week_datetime = datetime.combine(start_of_last_week, time.min)
+    start_of_last_week_epoch = int(start_of_last_week_datetime.timestamp())
+
+    current_data = crud.get_activities(callback.from_user.id, current_epoch, start_of_week_epoch)
+    last_week_data = crud.get_activities(callback.from_user.id, start_of_week_epoch, start_of_last_week_epoch)
+
+
 
 
 
