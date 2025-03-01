@@ -3,7 +3,7 @@ import logging
 
 from datetime import datetime
 
-from bot_strava.config import STRAVA_CLIENT_SECRET, STRAVA_CLIENT_ID
+from bot_strava.config import STRAVA_CLIENT_SECRET, STRAVA_CLIENT_ID, get_activity_link
 from bot_strava.database import get_db
 from bot_strava.models import User
 from sqlalchemy import select
@@ -60,4 +60,28 @@ async def get_valid_access_token(tg_id) -> str|None:
         return await refresh_access_token(tg_id)  # The token is outdated and must be refreshed
     else:
         return user.access_token    # The token is valid
+
+
+async def get_activities(tg_id, before, after):
+    async for session in get_db():
+        user = await session.scalar(select(User).where(User.tg_id == tg_id))
+        if not user or not user.access_token:
+            return None
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(
+            get_activity_link(before, after),
+            headers={"Authorization": f"Bearer {user.access_token}"}
+        )
+
+    if response.status_code == 200:
+        return response.json()
+
+    return None  # Error
+
+
+async def get_admins():
+    async for session in get_db():
+        result = await session.execute(select(User).where(User.is_admin.is_(True)))
+        return result.scalars().all()
 

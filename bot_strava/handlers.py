@@ -37,6 +37,12 @@ async def cmd_start(message: Message):
                              reply_markup=await kb.start())
 
 
+@router.callback_query(F.data == "week")
+async def week(callback: CallbackQuery):
+    await callback.answer()
+
+
+
 @router.message(Command("feedback"))
 async def ask_feedback(message: Message, state: FSMContext):
     await message.answer(messages[0]["feedback"],
