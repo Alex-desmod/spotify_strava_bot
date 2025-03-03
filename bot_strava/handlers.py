@@ -64,10 +64,7 @@ async def week(callback: CallbackQuery):
             if act["type"] == "Ride":
                 current_week_ride_elevation += act["total_elevation_gain"]
 
-    logger.info(last_week_data)
     for act in last_week_data:
-        logger.info(act["type"])
-        logger.info(act["distance"])
         if act["type"] in last_week_distance.keys():
 
             last_week_distance[act["type"]] += act["distance"]
@@ -75,8 +72,21 @@ async def week(callback: CallbackQuery):
             if act["type"] == "Ride":
                 last_week_ride_elevation += act["total_elevation_gain"]
 
-    await callback.message.answer(f"<b>Бег</b>🏃‍➡️\nТекущая неделя: {current_week_distance['Run']/1000:.1f} км\n"
+    await callback.message.answer(f"<b>Бег</b> 🏃‍➡️\nТекущая неделя: {current_week_distance['Run']/1000:.1f} км\n"
                                   f"Прошлая неделя: {last_week_distance['Run']/1000:.1f} км")
+    await callback.message.answer(f"<b>Вело</b> 🚴‍\nТекущая неделя: {current_week_distance['Ride'] / 1000:.1f} км\n"
+                                  f"набор высоты ↗️{int(current_week_ride_elevation)} м\n\n"
+                                  f"Прошлая неделя: {last_week_distance['Ride'] / 1000:.1f} км\n"
+                                  f"набор высоты ↗️{int(last_week_ride_elevation)} м")
+    if current_week_distance['Walk'] > 0:
+        await callback.message.answer(f"<b>Ходьба</b>🚶‍➡️\nТекущая неделя: {current_week_distance['Walk'] / 1000:.1f} км\n"
+                                      f"Прошлая неделя: {last_week_distance['Walk'] / 1000:.1f} км")
+    if current_week_distance['NordicSki'] > 0:
+        await callback.message.answer(f"<b>Лыжи</b>\nТекущая неделя: {current_week_distance['NordicSki'] / 1000:.1f} км\n"
+                                      f"Прошлая неделя: {last_week_distance['NordicSki'] / 1000:.1f} км")
+    if current_week_distance['Swim'] > 0:
+        await callback.message.answer(f"<b>Плавание</b>🏊‍➡️\nТекущая неделя: {current_week_distance['Swim'] / 1000:.1f} км\n"
+                                      f"Прошлая неделя: {last_week_distance['Swim'] / 1000:.1f} км")
 
 
 
