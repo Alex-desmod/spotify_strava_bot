@@ -49,8 +49,35 @@ async def week(callback: CallbackQuery):
     start_of_last_week_datetime = datetime.combine(start_of_last_week, time.min)
     start_of_last_week_epoch = int(start_of_last_week_datetime.timestamp())
 
-    current_data = crud.get_activities(callback.from_user.id, current_epoch, start_of_week_epoch)
-    last_week_data = crud.get_activities(callback.from_user.id, start_of_week_epoch, start_of_last_week_epoch)
+    current_week_data = await crud.get_activities(callback.from_user.id, current_epoch, start_of_week_epoch)
+    last_week_data = await crud.get_activities(callback.from_user.id, start_of_week_epoch, start_of_last_week_epoch)
+
+    current_week_distance ={"Run": 0, "Ride": 0,  "Walk": 0, "NordicSki": 0, "Swim": 0}
+    last_week_distance = {"Run": 0, "Ride": 0, "Walk": 0, "NordicSki": 0, "Swim": 0}
+    current_week_ride_elevation = 0
+    last_week_ride_elevation = 0
+
+    for act in current_week_data:
+        if act["type"] in current_week_distance.keys():
+            current_week_distance[act["type"]] += act["distance"]
+
+            if act["type"] == "Ride":
+                current_week_ride_elevation += act["total_elevation_gain"]
+
+    logger.info(last_week_data)
+    for act in last_week_data:
+        logger.info(act["type"])
+        logger.info(act["distance"])
+        if act["type"] in last_week_distance.keys():
+
+            last_week_distance[act["type"]] += act["distance"]
+
+            if act["type"] == "Ride":
+                last_week_ride_elevation += act["total_elevation_gain"]
+
+    await callback.message.answer(f"<b>Бег</b>🏃‍➡️\nТекущая неделя: {current_week_distance['Run']/1000:.1f} км\n"
+                                  f"Прошлая неделя: {last_week_distance['Run']/1000:.1f} км")
+
 
 
 

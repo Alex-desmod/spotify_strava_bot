@@ -62,7 +62,7 @@ async def get_valid_access_token(tg_id) -> str|None:
         return user.access_token    # The token is valid
 
 
-async def get_activities(tg_id, before, after):
+async def get_activities(tg_id, before, after, page=1):
     async for session in get_db():
         user = await session.scalar(select(User).where(User.tg_id == tg_id))
         if not user or not user.access_token:
@@ -70,7 +70,7 @@ async def get_activities(tg_id, before, after):
 
     async with httpx.AsyncClient() as client:
         response = await client.get(
-            get_activity_link(before, after),
+            get_activity_link(before, after, page),
             headers={"Authorization": f"Bearer {user.access_token}"}
         )
 
