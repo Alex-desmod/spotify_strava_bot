@@ -24,6 +24,8 @@ with open("bot_strava/messages.json", "r", encoding="utf-8") as file:
 class FeedbackState(StatesGroup):
     waiting_for_feedback = State()
 
+#current moment in the timestamp format
+current_epoch = int(datetime.now().timestamp())
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
@@ -41,7 +43,6 @@ async def cmd_start(message: Message):
 @router.callback_query(F.data == "week")
 async def week(callback: CallbackQuery):
     await callback.answer()
-    current_epoch = int(datetime.now().timestamp())
     start_of_week = date.today() - timedelta(days=date.today().weekday())
     start_of_week_datetime = datetime.combine(start_of_week, time.min)
     start_of_week_epoch = int(start_of_week_datetime.timestamp())
@@ -87,8 +88,77 @@ async def week(callback: CallbackQuery):
     if current_week_distance['Swim'] > 0:
         await callback.message.answer(f"<b>Плавание</b>🏊‍➡️\nТекущая неделя: {current_week_distance['Swim'] / 1000:.1f} км\n"
                                       f"Прошлая неделя: {last_week_distance['Swim'] / 1000:.1f} км")
+    await  callback.message.answer(messages[0]["more"],
+                             reply_markup=await kb.start())
 
 
+@router.callback_query(F.data == "month")
+async def week(callback: CallbackQuery):
+    await callback.answer()
+    start_of_month = date(date.today().year, date.today().month, 1)
+    start_of_month_datetime = datetime.combine(start_of_month, time.min)
+    start_of_month_epoch = int(start_of_month_datetime.timestamp())
+    if date.today().month == 1:  # In case of January
+        start_of_last_month = date(date.today().year - 1, 12, 1)
+    else:
+        start_of_last_month = date(date.today().year, date.today().month - 1, 1)
+    start_of_last_month_datetime = datetime.combine(start_of_last_month, time.min)
+    start_of_last_month_epoch = int(start_of_last_month_datetime.timestamp())
+
+    current_month_data = []
+    last_month_data = []
+
+    for i in range(1, 10):
+        current_month_response = await crud.get_activities(callback.from_user.id,
+                                                           current_epoch,
+                                                           start_of_month_epoch,
+                                                           page=i)
+        last_month_response = await crud.get_activities(callback.from_user.id,
+                                                           start_of_month_epoch,
+                                                           start_of_last_month_epoch,
+                                                           page=i)
+        if not current_month_response and not last_month_response:
+            break
+        current_month_data += current_month_response
+        last_month_data += last_month_response
+
+    current_month_distance = {"Run": 0, "Ride": 0, "Walk": 0, "NordicSki": 0, "Swim": 0}
+    last_month_distance = {"Run": 0, "Ride": 0, "Walk": 0, "NordicSki": 0, "Swim": 0}
+    current_month_ride_elevation = 0
+    last_month_ride_elevation = 0
+
+    for act in current_month_data:
+        if act["type"] in current_month_distance.keys():
+            current_month_distance[act["type"]] += act["distance"]
+
+            if act["type"] == "Ride":
+                current_month_ride_elevation += act["total_elevation_gain"]
+
+    for act in last_month_data:
+        if act["type"] in last_month_distance.keys():
+
+            last_month_distance[act["type"]] += act["distance"]
+
+            if act["type"] == "Ride":
+                last_month_ride_elevation += act["total_elevation_gain"]
+
+    await callback.message.answer(f"<b>Бег</b> 🏃‍➡️\nТекущий месяц: {current_month_distance['Run']/1000:.1f} км\n"
+                                  f"Прошлый месяц: {last_month_distance['Run']/1000:.1f} км")
+    await callback.message.answer(f"<b>Вело</b> 🚴‍\nТекущий месяц: {current_month_distance['Ride'] / 1000:.1f} км\n"
+                                  f"набор высоты ↗️{int(current_month_ride_elevation)} м\n\n"
+                                  f"Прошлый месяц: {last_month_distance['Ride'] / 1000:.1f} км\n"
+                                  f"набор высоты ↗️{int(last_month_ride_elevation)} м")
+    if current_month_distance['Walk'] > 0:
+        await callback.message.answer(f"<b>Ходьба</b>🚶‍➡️\nТекущий месяц: {current_month_distance['Walk'] / 1000:.1f} км\n"
+                                      f"Прошлый месяц: {last_month_distance['Walk'] / 1000:.1f} км")
+    if current_month_distance['NordicSki'] > 0:
+        await callback.message.answer(f"<b>Лыжи</b>\nТекущий месяц: {current_month_distance['NordicSki'] / 1000:.1f} км\n"
+                                      f"Прошлый месяц: {last_month_distance['NordicSki'] / 1000:.1f} км")
+    if current_month_distance['Swim'] > 0:
+        await callback.message.answer(f"<b>Плавание</b>🏊‍➡️\nТекущий месяц: {current_month_distance['Swim'] / 1000:.1f} км\n"
+                                      f"Прошлый месяц: {last_month_distance['Swim'] / 1000:.1f} км")
+    await  callback.message.answer(messages[0]["more"],
+                                   reply_markup=await kb.start())
 
 
 
