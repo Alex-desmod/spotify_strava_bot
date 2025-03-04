@@ -10,7 +10,7 @@ load_dotenv()
 STRAVA_CLIENT_SECRET = os.getenv("STRAVA_CLIENT_SECRET")
 STRAVA_CLIENT_ID = os.getenv("STRAVA_CLIENT_ID")
 AUTH_URL = "https://www.strava.com/oauth/authorize"
-ACTIVITY_URL = "https://www.strava.com/api/v3/athlete/activities"
+ACTIVITY_URL = "https://www.strava.com/api/v3/"
 SCOPES = "read,activity:read_all"
 
 
@@ -20,4 +20,8 @@ def get_auth_link(tg_id):
 
 
 def get_activity_link(before, after, page):
-    return f"{ACTIVITY_URL}?before={before}&after={after}&page={page}&per_page=100"
+    return f"{ACTIVITY_URL}athlete/activities?before={before}&after={after}&page={page}&per_page=100"
+
+
+def get_athlete_stats(id):
+    return f"{ACTIVITY_URL}athletes/{id}/stats"

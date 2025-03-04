@@ -88,7 +88,7 @@ async def week(callback: CallbackQuery):
     if current_week_distance['Swim'] > 0:
         await callback.message.answer(f"<b>Плавание</b>🏊‍➡️\nТекущая неделя: {current_week_distance['Swim'] / 1000:.1f} км\n"
                                       f"Прошлая неделя: {last_week_distance['Swim'] / 1000:.1f} км")
-    await  callback.message.answer(messages[0]["more"],
+    await  callback.message.answer(messages[0]["else"],
                              reply_markup=await kb.start())
 
 
@@ -157,10 +157,53 @@ async def week(callback: CallbackQuery):
     if current_month_distance['Swim'] > 0:
         await callback.message.answer(f"<b>Плавание</b>🏊‍➡️\nТекущий месяц: {current_month_distance['Swim'] / 1000:.1f} км\n"
                                       f"Прошлый месяц: {last_month_distance['Swim'] / 1000:.1f} км")
-    await  callback.message.answer(messages[0]["more"],
+    await  callback.message.answer(messages[0]["else"],
                                    reply_markup=await kb.start())
 
 
+@router.callback_query(F.data == "year")
+async def week(callback: CallbackQuery):
+    await callback.answer()
+
+    start_of_year = date(date.today().year, 1, 1)
+    start_of_year_datetime = datetime.combine(start_of_year, time.min)
+    start_of_year_epoch = int(start_of_year_datetime.timestamp())
+
+    total_data = await crud.get_total(callback.from_user.id)
+    current_year_data = []
+    for i in range(1, 12):
+        current_year_response = await crud.get_activities(callback.from_user.id,
+                                                           current_epoch,
+                                                           start_of_year_epoch,
+                                                           page=i)
+        if not current_year_response:
+            break
+        current_year_data += current_year_response
+
+    run_races = [race for race in current_year_data if race["type"] == "Run" and race["workout_type"] == 1]
+    ride_races = [race for race in current_year_data if race["type"] == "Ride" and race["workout_type"] == 11]
+
+    await callback.message.answer(f"<b>Бег</b> 🏃‍➡️\n"
+                                  f"Текущий год: {total_data['ytd_run_totals']['distance']/1000:.1f} км")
+    if run_races:
+        await callback.message.answer(messages[0]["races"])
+        for race in run_races:
+            race_time = str(timedelta(seconds=race["moving_time"]))
+            await callback.message.answer(f"<b>{race['start_date'].split('T')[0]}</b> "
+                                          f"{race['name']}\n{race['distance']/1000:.1f}км {race_time}")
+        await  callback.message.answer(messages[0]["else"],
+                                       reply_markup=await kb.start())
+
+    await callback.message.answer(f"<b>Вело</b> 🚴‍\n"
+                                  f"Текущий год: {total_data['ytd_ride_totals']['distance'] / 1000:.1f} км")
+    if ride_races:
+        await callback.message.answer(messages[0]["races"])
+        for race in ride_races:
+            race_time = str(timedelta(seconds=race["moving_time"]))
+            await callback.message.answer(f"<b>{race['start_date'].split('T')[0]}</b> "
+                                          f"{race['name']}\n{race['distance']/1000:.1f}км {race_time}")
+        await  callback.message.answer(messages[0]["else"],
+                                       reply_markup=await kb.start())
 
 
 @router.message(Command("feedback"))
