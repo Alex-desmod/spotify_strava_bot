@@ -108,3 +108,8 @@ async def callback_strava(request: Request):
     else:
         return {"error": "Failed to get access token"}
 
+
+@app.get("/")
+async def read_root(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+

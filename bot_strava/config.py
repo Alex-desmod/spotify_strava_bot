@@ -23,5 +23,9 @@ def get_activity_link(before, after, page):
     return f"{ACTIVITY_URL}athlete/activities?before={before}&after={after}&page={page}&per_page=100"
 
 
+def get_one_activity_link(id):
+    return f"{ACTIVITY_URL}activities/{id}?include_all_efforts"
+
+
 def get_athlete_stats(id):
     return f"{ACTIVITY_URL}athletes/{id}/stats"

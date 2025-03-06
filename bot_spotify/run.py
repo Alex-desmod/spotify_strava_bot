@@ -15,11 +15,11 @@ from bot_spotify.database import init_db
 # sys.path.append(os.path.dirname(os.path.abspath(os.path.join(__file__, "..", ".."))))
 
 
-async def run_web_server():
-    """Function to run the FastAPI web-server."""
-    config = uvicorn.Config(app, host="127.0.0.1", port=8000)
-    server = uvicorn.Server(config)
-    await server.serve()
+# async def run_web_server():
+#     """Function to run the FastAPI web-server."""
+#     config = uvicorn.Config(app, host="127.0.0.1", port=8000)
+#     server = uvicorn.Server(config)
+#     await server.serve()
 
 
 async def main():
@@ -30,7 +30,7 @@ async def main():
     dp = Dispatcher()
     dp.include_router(router)
     await init_db()
-    asyncio.create_task(run_web_server())
+    # asyncio.create_task(run_web_server())
     await dp.start_polling(bot)
 
 if __name__ == '__main__':

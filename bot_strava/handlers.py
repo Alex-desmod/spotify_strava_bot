@@ -127,6 +127,9 @@ async def week(callback: CallbackQuery):
     current_month_ride_elevation = 0
     last_month_ride_elevation = 0
 
+    run_workouts = [act for act in current_month_data if act["type"] == "Run" and act["workout_type"] == 3] + [act for act in last_month_data if act["type"] == "Run" and act["workout_type"] == 3]
+    ride_workouts = [act for act in current_month_data if act["type"] == "Ride" and act["workout_type"] == 12] + [act for act in last_month_data if act["type"] == "Ride" and act["workout_type"] == 12]
+
     for act in current_month_data:
         if act["type"] in current_month_distance.keys():
             current_month_distance[act["type"]] += act["distance"]
@@ -144,10 +147,28 @@ async def week(callback: CallbackQuery):
 
     await callback.message.answer(f"<b>Бег</b> 🏃‍➡️\nТекущий месяц: {current_month_distance['Run']/1000:.1f} км\n"
                                   f"Прошлый месяц: {last_month_distance['Run']/1000:.1f} км")
+    if run_workouts:
+        await callback.message.answer(messages[0]["workouts"])
+        for workout in run_workouts:
+            workout_time = str(timedelta(seconds=workout["moving_time"]))
+            full_workout = await crud.get_the_activity(callback.from_user.id, workout["id"])
+            await callback.message.answer(f"<b>{workout['start_date'].split('T')[0]}</b> "
+                                          f"{workout['name']}\n{workout['distance'] / 1000:.1f} км {workout_time}\n"
+                                          f"{full_workout['description']}")
+
     await callback.message.answer(f"<b>Вело</b> 🚴‍\nТекущий месяц: {current_month_distance['Ride'] / 1000:.1f} км\n"
                                   f"набор высоты ↗️{int(current_month_ride_elevation)} м\n\n"
                                   f"Прошлый месяц: {last_month_distance['Ride'] / 1000:.1f} км\n"
                                   f"набор высоты ↗️{int(last_month_ride_elevation)} м")
+    if ride_workouts:
+        await callback.message.answer(messages[0]["workouts"])
+        for workout in ride_workouts:
+            workout_time = str(timedelta(seconds=workout["moving_time"]))
+            full_workout = await crud.get_the_activity(callback.from_user.id, workout["id"])
+            await callback.message.answer(f"<b>{workout['start_date'].split('T')[0]}</b> "
+                                          f"{workout['name']}\n{workout['distance'] / 1000:.1f} км {workout_time}\n"
+                                          f"{full_workout['description']}")
+
     if current_month_distance['Walk'] > 0:
         await callback.message.answer(f"<b>Ходьба</b>🚶‍➡️\nТекущий месяц: {current_month_distance['Walk'] / 1000:.1f} км\n"
                                       f"Прошлый месяц: {last_month_distance['Walk'] / 1000:.1f} км")
@@ -190,7 +211,7 @@ async def week(callback: CallbackQuery):
         for race in run_races:
             race_time = str(timedelta(seconds=race["moving_time"]))
             await callback.message.answer(f"<b>{race['start_date'].split('T')[0]}</b> "
-                                          f"{race['name']}\n{race['distance']/1000:.1f}км {race_time}")
+                                          f"{race['name']}\n{race['distance']/1000:.1f} км {race_time}")
         await  callback.message.answer(messages[0]["else"],
                                        reply_markup=await kb.start())
 
