@@ -93,7 +93,7 @@ async def week(callback: CallbackQuery):
 
 
 @router.callback_query(F.data == "month")
-async def week(callback: CallbackQuery):
+async def month(callback: CallbackQuery):
     await callback.answer()
     start_of_month = date(date.today().year, date.today().month, 1)
     start_of_month_datetime = datetime.combine(start_of_month, time.min)
@@ -183,7 +183,7 @@ async def week(callback: CallbackQuery):
 
 
 @router.callback_query(F.data == "year")
-async def week(callback: CallbackQuery):
+async def year(callback: CallbackQuery):
     await callback.answer()
 
     start_of_year = date(date.today().year, 1, 1)
