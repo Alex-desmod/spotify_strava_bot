@@ -24,8 +24,6 @@ with open("bot_strava/messages.json", "r", encoding="utf-8") as file:
 class FeedbackState(StatesGroup):
     waiting_for_feedback = State()
 
-#current moment in the timestamp format
-current_epoch = int(datetime.now().timestamp())
 
 @router.message(CommandStart())
 async def cmd_start(message: Message):
@@ -43,6 +41,8 @@ async def cmd_start(message: Message):
 @router.callback_query(F.data == "week")
 async def week(callback: CallbackQuery):
     await callback.answer()
+    # current moment in the timestamp format
+    current_epoch = int(datetime.now().timestamp())
     start_of_week = date.today() - timedelta(days=date.today().weekday())
     start_of_week_datetime = datetime.combine(start_of_week, time.min)
     start_of_week_epoch = int(start_of_week_datetime.timestamp())
@@ -95,6 +95,8 @@ async def week(callback: CallbackQuery):
 @router.callback_query(F.data == "month")
 async def month(callback: CallbackQuery):
     await callback.answer()
+    # current moment in the timestamp format
+    current_epoch = int(datetime.now().timestamp())
     start_of_month = date(date.today().year, date.today().month, 1)
     start_of_month_datetime = datetime.combine(start_of_month, time.min)
     start_of_month_epoch = int(start_of_month_datetime.timestamp())
@@ -185,7 +187,8 @@ async def month(callback: CallbackQuery):
 @router.callback_query(F.data == "year")
 async def year(callback: CallbackQuery):
     await callback.answer()
-
+    # current moment in the timestamp format
+    current_epoch = int(datetime.now().timestamp())
     start_of_year = date(date.today().year, 1, 1)
     start_of_year_datetime = datetime.combine(start_of_year, time.min)
     start_of_year_epoch = int(start_of_year_datetime.timestamp())
