@@ -1,6 +1,5 @@
 import os
 import httpx
-import logging
 
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
@@ -13,7 +12,6 @@ from web_server.database import get_spotify_session, get_strava_session
 from bot_spotify.models import User as SpotifyUser
 from bot_strava.models import User as StravaUser
 
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 app = FastAPI()
 
@@ -109,7 +107,4 @@ async def callback_strava(request: Request):
         return {"error": "Failed to get access token"}
 
 
-@app.get("/")
-async def read_root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
 

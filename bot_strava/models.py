@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from aiogram.types import DateTime
 from sqlalchemy import Integer, BigInteger, String, Boolean, ForeignKey, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs
@@ -13,7 +15,7 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     tg_id = mapped_column(BigInteger, index=True, unique=True)
     name: Mapped[str] = mapped_column(String(25))
@@ -23,3 +25,11 @@ class User(Base):
     refresh_token: Mapped[str] = mapped_column(String(), nullable=True)
     expires_at: Mapped[int] = mapped_column(Integer, nullable=True)
 
+class DieHardPromo(Base):
+    __tablename__ = "promos"
+
+    promo_id: Mapped[int] = mapped_column(Integer, nullable=True)
+    name: Mapped[str] = mapped_column(String(100))
+    end_date: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    coupons: Mapped[int] = mapped_column(Integer, nullable=True)
+    price: Mapped[int] = mapped_column(Integer, nullable=True)
