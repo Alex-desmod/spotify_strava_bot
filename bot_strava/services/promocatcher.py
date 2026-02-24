@@ -1,7 +1,6 @@
 import asyncio
 import httpx
 import logging
-import os
 
 from datetime import datetime
 from contextlib import suppress
@@ -13,7 +12,6 @@ from web_server.database import StravaSessionLocal
 
 URL = "https://diehard.run/api/trpc/promo.findMany?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%7B%22orderBy%22%3A%5B%7B%22startDate%22%3A%22desc%22%7D%5D%7D%7D%7D"
 CHECK_INTERVAL = 600
-ADMIN_CHAT_ID = os.getenv('ADMIN_CHAT_ID')
 
 logger = logging.getLogger(__name__)
 
@@ -34,9 +32,9 @@ async def promo_exists(session: AsyncSession, promo_id: int) -> bool:
 
 class PromoWatcher:
 
-    def __init__(self, bot):
+    def __init__(self, bot, chat_id: int):
         self.bot = bot
-        self.chat_id = ADMIN_CHAT_ID
+        self.chat_id = chat_id
         self._task: asyncio.Task | None = None
 
     async def _watcher_loop(self):
@@ -45,7 +43,7 @@ class PromoWatcher:
                 try:
                     data = await fetch_promos()
                     items = data[0]["result"]["data"]["json"]
-                    async with StravaSessionLocal as session:
+                    async with StravaSessionLocal() as session:
                         for item in items:
                             if not await promo_exists(session, item['id']):
                                 item_date = datetime.fromisoformat(item['endDate'])
@@ -53,7 +51,7 @@ class PromoWatcher:
                                     f"В магазине DieHard Новый промокод!\n"
                                     f"{item['title']}\n"
                                     f"Баллы: {item['price']}\n"
-                                    f"Осталось: {item['_count']['coupons']}"
+                                    f"Осталось: {item['_count']['coupons']}\n"
                                     f"Срок до {item_date}"
                                 )
                                 await self.bot.send_message(self.chat_id, text)

@@ -1,7 +1,5 @@
 from datetime import datetime
-
-from aiogram.types import DateTime
-from sqlalchemy import Integer, BigInteger, String, Boolean, ForeignKey, func
+from sqlalchemy import Integer, BigInteger, String, Boolean, DateTime, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.ext.asyncio import AsyncAttrs
 

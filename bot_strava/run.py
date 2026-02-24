@@ -14,23 +14,26 @@ from web_server.server import app
 from bot_strava.database import init_db
 
 
-async def run_web_server():
-    """Function to run the FastAPI web-server."""
-    config = uvicorn.Config(app, host="127.0.0.1", port=8000)
-    server = uvicorn.Server(config)
-    await server.serve()
+load_dotenv()
+TOKEN = os.getenv("BOT_TOKEN")
+ADMIN_CHAT_ID = os.getenv("ADMIN_CHAT_ID")
+
+# async def run_web_server():
+#     """Function to run the FastAPI web-server."""
+#     config = uvicorn.Config(app, host="127.0.0.1", port=8000)
+#     server = uvicorn.Server(config)
+#     await server.serve()
 
 
 async def main():
-    load_dotenv()
-    TOKEN = os.getenv('BOT_TOKEN')
-
     bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    bot["watcher"] = PromoWatcher(bot)
+    watcher = PromoWatcher(bot, int(ADMIN_CHAT_ID))
     dp = Dispatcher()
+    dp.workflow_data["watcher"] = watcher
+    dp.workflow_data["admin_id"] = int(ADMIN_CHAT_ID)
     dp.include_router(router)
     await init_db()
-    asyncio.create_task(run_web_server())
+    # asyncio.create_task(run_web_server())
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
