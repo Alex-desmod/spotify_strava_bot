@@ -10,8 +10,6 @@ from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 import bot_strava.keyboards as kb
 import bot_strava.crud as crud
-from bot_strava.filters.admin import AdminFilter
-from bot_strava.services.promocatcher import PromoWatcher
 
 router = Router(name=__name__)
 
@@ -229,22 +227,6 @@ async def year(callback: CallbackQuery):
                                           f"{race['name']}\n{race['distance']/1000:.1f}км {race_time}")
         await  callback.message.answer(messages[0]["else"],
                                        reply_markup=await kb.start())
-
-
-@router.message(Command("watcher_start"), AdminFilter())
-async def start_watcher(message: Message, watcher: PromoWatcher):
-    if watcher.start():
-        await message.answer("✅ Watcher запущен")
-    else:
-        await message.answer("⚠️ Watcher уже работает")
-
-
-@router.message(Command("watcher_stop"), AdminFilter())
-async def stop_watcher(message: Message, watcher: PromoWatcher):
-    if await watcher.stop():
-        await message.answer("🛑 Watcher остановлен")
-    else:
-        await message.answer("⚠️ Watcher не запущен")
 
 
 @router.message(Command("feedback"))

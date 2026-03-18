@@ -8,7 +8,7 @@ from aiogram.enums import ParseMode
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
 
-from bot_strava.handlers import router
+from bot_strava.handlers import common_handlers, watcher_handlers, calc_handlers
 from bot_strava.services.promocatcher import PromoWatcher
 from web_server.server import app
 from bot_strava.database import init_db
@@ -31,7 +31,11 @@ async def main():
     dp = Dispatcher()
     dp.workflow_data["watcher"] = watcher
     dp.workflow_data["admin_id"] = int(ADMIN_CHAT_ID)
-    dp.include_router(router)
+    dp.include_routers(
+        watcher_handlers.router,
+        calc_handlers.router,
+        common_handlers.router
+    )
     await init_db()
     # asyncio.create_task(run_web_server())
     await dp.start_polling(bot)
