@@ -164,7 +164,7 @@ async def handle_result(callback: CallbackQuery, state: FSMContext):
                 f"Введи результат. 5 цифр в формате {digits[0]}:{digits[1]}{digits[2]}:{digits[3]}с",
                 reply_markup=await kb.numpad()
             )
-            if int(digits[4]) > 5:
+            if int(digits[3]) > 5:
                 await state.clear()
                 await callback.message.edit_text(
                     messages[0]["incorrect"],
