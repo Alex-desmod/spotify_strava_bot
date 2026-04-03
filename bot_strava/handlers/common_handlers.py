@@ -214,8 +214,6 @@ async def year(callback: CallbackQuery):
             race_time = str(timedelta(seconds=race["moving_time"]))
             await callback.message.answer(f"<b>{race['start_date'].split('T')[0]}</b> "
                                           f"{race['name']}\n{race['distance']/1000:.1f} км {race_time}")
-        await  callback.message.answer(messages[0]["else"],
-                                       reply_markup=await kb.start())
 
     await callback.message.answer(f"<b>Вело</b> 🚴‍\n"
                                   f"Текущий год: {total_data['ytd_ride_totals']['distance'] / 1000:.1f} км")
@@ -227,6 +225,9 @@ async def year(callback: CallbackQuery):
                                           f"{race['name']}\n{race['distance']/1000:.1f}км {race_time}")
         await  callback.message.answer(messages[0]["else"],
                                        reply_markup=await kb.start())
+
+    await  callback.message.answer(messages[0]["else"],
+                                   reply_markup=await kb.start())
 
 
 @router.message(Command("feedback"))

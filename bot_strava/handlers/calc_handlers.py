@@ -83,6 +83,13 @@ async def handle_pace(callback: CallbackQuery, state: FSMContext):
                 f"Введи темп. 3 цифры в формате {digits[0]}:{digits[1]}x мин/км",
                 reply_markup=await kb.numpad()
             )
+            if int(digits[1]) > 5:
+                await state.clear()
+                await callback.message.edit_text(
+                    messages[0]["incorrect"],
+                    reply_markup=await kb.distance_pace()
+                )
+                return
     else:
         pace_sec = int(digits[0])*60 + int(digits[1:])
         distance = data["distance"]
@@ -114,3 +121,67 @@ async def result_input(callback: CallbackQuery, state: FSMContext):
         "Введи результат. 5 цифр в формате ч:мм:сс",
         reply_markup=await kb.numpad()
     )
+
+
+@router.callback_query(CalcState.waiting_for_result, F.data.in_([str(n) for n in range(10)]))
+async def handle_result(callback: CallbackQuery, state: FSMContext):
+    data = await state.get_data()
+
+    # timeout check (15 seconds)
+    elapsed = (datetime.now() - data["timestamp"]).total_seconds()
+    if elapsed > 15:
+        await state.clear()
+        return
+
+    digits = data.get("result_digits", "") + callback.data
+
+    if len(digits) < 5:
+        await state.update_data(result_digits=digits, timestamp=datetime.now())
+        if len(digits) == 1:
+            await callback.message.edit_text(
+                f"Введи результат. 5 цифр в формате {digits[0]}:мм:сс",
+                reply_markup=await kb.numpad()
+            )
+        elif len(digits) == 2:
+            await callback.message.edit_text(
+                f"Введи результат. 5 цифр в формате {digits[0]}:{digits[1]}м:сс",
+                reply_markup=await kb.numpad()
+            )
+            if int(digits[1]) > 5:
+                await state.clear()
+                await callback.message.edit_text(
+                    messages[0]["incorrect"],
+                    reply_markup=await kb.distance_result()
+                )
+                return
+        elif len(digits) == 3:
+            await callback.message.edit_text(
+                f"Введи результат. 5 цифр в формате {digits[0]}:{digits[1]}{digits[2]}:сс",
+                reply_markup=await kb.numpad()
+            )
+        else:
+            await callback.message.edit_text(
+                f"Введи результат. 5 цифр в формате {digits[0]}:{digits[1]}{digits[2]}:{digits[3]}с",
+                reply_markup=await kb.numpad()
+            )
+            if int(digits[4]) > 5:
+                await state.clear()
+                await callback.message.edit_text(
+                    messages[0]["incorrect"],
+                    reply_markup=await kb.distance_result()
+                )
+                return
+    else:
+        total_sec = int(digits[0])*3600 + int(digits[1:3])*60 + int(digits[3:])
+        distance = data["distance"]
+        pace_sec = total_sec / (distance/1000)
+        mins = int(pace_sec // 60)
+        secs = int(pace_sec % 60)
+        await callback.message.edit_text(
+            f"Дистанция: {distance / 1000:.1f} км\n"
+            f"Результат: {digits[0]}:{digits[1:3]}:{digits[3:]}\n"
+            f"Темп: {mins}:{secs:02d} мин/км",
+            reply_markup=None
+        )
+        await state.clear()
+
